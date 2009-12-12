@@ -1,3 +1,4 @@
+// -*- javascript-indent-level: 2 -*-
 // ==UserScript==
 // @name             Skycust
 // @description      A forum avatar-replacer based on a remote canonical image source.
