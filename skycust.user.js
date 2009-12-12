@@ -11,9 +11,13 @@ var avatars = {
   'Sadistica': 'http://skyrates.jusque.net/betsy.png'
 }
 
+function find_avatar(name) {
+  return avatars[name];
+}
+
 $('td:has(span.name):has(span.postdetails)').each(function () {
   var name = $(this).find('span.name').text();
-  var avatar = avatars[name];
+  var avatar = find_avatar(name);
   if (avatar) {
     $(this).find('span.postdetails img').attr({
       src:    avatar,
