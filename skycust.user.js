@@ -9,11 +9,59 @@
 // list of functions of form (name to check, success (link), failure())
 var servers = [ spreadsheet("tINrGl7OrhT110weszgMnDw") ];
 
-var local = { 'Sadistica': 'http://skyrates.jusque.net/betsy.png' };
+var local = GM_getValue('override_local');
+if (local) { local = JSON.parse(local); } else { local = {}; }
+function save_local() {
+  GM_setValue('override_local', JSON.stringify(local));
+}
 
 function set_avatar_link(span, link) {
-  $(span).find('span.postdetails img').attr({src: link});
+  $(span).find('span.postdetails img').attr({ src: link,
+					      title: "Click to override this custom avatar"
+  });
 }
+
+function add_override_link(span, name) {
+  var img = $(span).find('span.postdetails img');
+  var original = img.attr("src");
+  var colour = img.parent().parent().css("background-color");
+  var set_and_save = function(new_local) {
+    local[name] = new_local;
+    save_local();
+    find_and_set_avatar(span, name);
+    overrider.hide();
+  };
+
+  var overrider = $('<div class="overrider"></div>');
+  var default_link = $('<a>Use default image as local override</a>');
+  default_link.click(function () { set_and_save(original); });
+  var custom_textbox = $('<input type="text"></input>');
+  custom_textbox.css({ width: 100 });
+  var custom_link = $('<a>Use this custom URL</a>');
+  custom_link.click(function () { set_and_save(custom_textbox.val()); });
+  var clear_link = $('<a>Clear local override for this avatar</a>');
+  clear_link.click(function () { set_and_save(undefined); });
+
+  overrider
+    .append(default_link).append("<br><br>")
+    .append(custom_textbox).append("<br>")
+    .append(custom_link).append("<br><br>")
+    .append(clear_link);
+  overrider.appendTo($("body"));
+  overrider.css({ 'width': 150,
+		  'display': "inline-block",
+		  'background-color': colour,
+		  'border': '2px inset black',
+		  'position': "absolute" });
+  overrider.hide();
+
+  img.attr({ title: "Click to override this with a custom avatar" });
+  img.click( function(e) {
+    overrider.show();
+    overrider.css({ left: e.pageX, top: e.pageY });
+  });
+}
+
 
 function simple(url_base) {
   return function(name,success,failure) {
@@ -63,5 +111,6 @@ function find_and_set_avatar(span, name) {
 
 $('td:has(span.name):has(span.postdetails)').each(function () {
   var name = $(this).find('span.name').text();
+  add_override_link(this, name);
   find_and_set_avatar(this, name);
 });
