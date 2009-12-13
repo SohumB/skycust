@@ -4,10 +4,85 @@
 // @description      A forum avatar-replacer based on a remote canonical image source.
 // @include          http://skyrates.net/forum/*
 // @require          http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js
+//
 // ==/UserScript==
 
+if (!Array.prototype.map)
+{
+  Array.prototype.map = function(fun)
+  {
+    var len = this.length >>> 0;
+    if (typeof fun != "function")
+      throw new TypeError();
+
+    var res = new Array(len);
+    var thisp = arguments[1];
+    for (var i = 0; i < len; i++)
+    {
+      if (i in this)
+        res[i] = fun.call(thisp, this[i], i, this);
+    }
+
+    return res;
+  };
+}
+
+function spreadsheet(key) {
+  var avatars;
+  return function(name,success,failure) {
+    var check_avatars = function () {
+      if (avatars[name]) { success(avatars[name]); } else { failure(); }
+    };
+    if (!avatars) {
+      GM_xmlhttpRequest({
+	url: 'http://spreadsheets.google.com/feeds/list/' + key + '/1/public/values?alt=json',
+	method: 'GET',
+	onload: function(response) { response = JSON.parse(response.responseText);
+				     avatars = {};
+				     $.each(response.feed.entry, function(i, entry) {
+				       avatars[entry.gsx$name.$t] = entry.gsx$avatar.$t;
+				     });
+				     check_avatars();
+				   },
+	onerror: function(response) { failure(); }});
+    } else { check_avatars(); }
+  };
+}
+
+function simple(url_base) {
+  var avatars = {};
+  return function(name,success,failure) {
+    cached = avatars[name];
+    if (cached) {
+      if (cached != "not found") {
+	success(avatars[name]);
+      } else {
+	failure();
+      }
+    } else {
+      var link = url_base + name;
+      $.ajax({ url: link,
+	       type: "GET",
+	       success: function (response) { avatars[name] = link; success(link); },
+	       error: function (req, stat, err) { avatars[name] = "not found"; failure(); }});
+    }
+  };
+}
+
+
 // list of functions of form (name to check, success (link), failure())
-var servers = [ spreadsheet("tINrGl7OrhT110weszgMnDw") ];
+var servers_text = GM_getValue('server_list');
+if (servers_text) {
+  servers_text = JSON.parse(servers_text);
+} else {
+  servers_text = [ 'spreadsheet("tINrGl7OrhT110weszgMnDw")' ];
+}
+
+var servers = servers_text.map(function(val, ind, thing) { return eval(val); });
+function save_servers() {
+  GM_setValue('server_list', JSON.stringify(servers_text));
+  servers = servers_text.map(function(val, ind, thing) { return eval(val); });
+}
 
 var local = GM_getValue('override_local');
 if (local) { local = JSON.parse(local); } else { local = {}; }
@@ -60,48 +135,6 @@ function add_override_link(span, name) {
     overrider.toggle();
     overrider.css({ left: e.pageX + 5, top: e.pageY + 5 });
   });
-}
-
-function simple(url_base) {
-  var avatars = {};
-  return function(name,success,failure) {
-    cached = avatars[name];
-    if (cached) {
-      if (cached != "not found") {
-	success(avatars[name]);
-      } else {
-	failure();
-      }
-    } else {
-      var link = url_base + name;
-      $.ajax({ url: link,
-	       type: "GET",
-	       success: function (response) { avatars[name] = link; success(link); },
-	       error: function (req, stat, err) { avatars[name] = "not found"; failure(); }});
-    }
-  };
-}
-
-function spreadsheet(key) {
-  var avatars;
-  return function(name,success,failure) {
-    var check_avatars = function () {
-      if (avatars[name]) { success(avatars[name]); } else { failure(); }
-    };
-    if (!avatars) {
-      GM_xmlhttpRequest({
-	url: 'http://spreadsheets.google.com/feeds/list/' + key + '/1/public/values?alt=json',
-	method: 'GET',
-	onload: function(response) { response = JSON.parse(response.responseText);
-				     avatars = {};
-				     $.each(response.feed.entry, function(i, entry) {
-				       avatars[entry.gsx$name.$t] = entry.gsx$avatar.$t;
-				     });
-				     check_avatars();
-				   },
-	onerror: function(response) { failure(); }});
-    } else { check_avatars(); }
-  };
 }
 
 function check_asynchronously(span, name, which_server) {
