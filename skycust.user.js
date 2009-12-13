@@ -49,7 +49,7 @@ function spreadsheet(key) {
   };
 }
 
-function simple(url_base) {
+function memoize(fn) {
   var avatars = {};
   return function(name,success,failure) {
     cached = avatars[name];
@@ -60,15 +60,21 @@ function simple(url_base) {
 	failure();
       }
     } else {
+      fn(name, success, failure);
+    }
+  };
+}
+
+function simple(url_base) {
+  return memoize(
+    function(name, success, failure) {
       var link = url_base + name;
       $.ajax({ url: link,
 	       type: "GET",
 	       success: function (response) { avatars[name] = link; success(link); },
 	       error: function (req, stat, err) { avatars[name] = "not found"; failure(); }});
-    }
-  };
+  });
 }
-
 
 // list of functions of form (name to check, success (link), failure())
 var servers_text = GM_getValue('server_list');
