@@ -57,7 +57,7 @@ function add_override_link(span, name) {
 
   img.attr({ title: "Click to override this with a custom avatar" });
   img.click( function(e) {
-    overrider.show();
+    overrider.toggle();
     overrider.css({ left: e.pageX, top: e.pageY });
   });
 }
