@@ -4,8 +4,12 @@
 // @description      A forum avatar-replacer based on a remote canonical image source.
 // @include          http://skyrates.net/forum/*
 // @require          http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js
+// @require          http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js
+// @require          http://plugins.jquery.com/files/aqFloater.js.txt
 //
 // ==/UserScript==
+
+var customisation_icon = 'http://images3.wikia.nocookie.net/Skyrates/images/9/99/Customisation_Icon.png';
 
 if (!Array.prototype.map)
 {
@@ -162,3 +166,65 @@ $('td:has(span.name):has(span.postdetails)').each(function () {
   add_override_link(this, name);
   find_and_set_avatar(this, name);
 });
+
+$("head").append(
+  '<style type="text/css">' +
+    '.sortable { list-style-type: none; margin: 0; padding: 0; }' +
+    '.sortable li { padding: 0.4em; font-size: 0.8em; }'
+);
+
+function add_to_list(list, itext) {
+  list.append($('<li class="ui-state-default">' + itext + '</li>'));
+}
+
+var server_div = $('<div id="server_editor"></div>');
+
+var list_div = $('<div></div>');
+list_div.css({ height: '100%', width: '60%', float: 'left'});
+var list = $('<ul class="sortable"></ul>');
+for (i in servers_text) { add_to_list(list,servers_text[i]); }
+list_div.append(list);
+
+var add_div = $('<div></div>');
+add_div.css({ height: '90%', width: '40%', float: 'left'});
+var box = $('<input type="text">');
+var add_as_simple = $('<a>Add as simple server</a>');
+add_as_simple.click(function () { add_to_list(list, 'simple("' + box.val() + '")'); });
+var add_as_spread = $('<a>Add as spreadsheet key</a>');
+add_as_spread.click(function () { add_to_list(list, 'spreadsheet("' + box.val() + '")'); });
+var area = $('<textarea rows="5"></textarea>');
+var add_as_custom = $('<a>Add as custom function</a>');
+add_as_custom.click(function () { add_to_list(list, area.val()); });
+add_div
+  .append(box).append("<br>")
+  .append(add_as_simple).append("<br>")
+  .append(add_as_spread).append("<br><br>")
+  .append(area).append("<br>")
+  .append(add_as_custom).append("<br>");
+
+var button_div = $('<div></div>');
+button_div.css({ height: '8%', width: '100%' });
+var button = $('<button type="button">Save</button>');
+button.click(function() {
+  servers_text = list.children().map(function (i, li) { return $(li).text(); });
+  save_servers();
+});
+button_div.append(button);
+
+server_div.append(list_div).append(add_div).append(button_div);
+server_div.css({ 'background-color': 'white', 'border': '1px solid black', 'position': 'absolute', width: '34%', padding: '1em' });
+server_div.appendTo($("body"));
+server_div.hide();
+list.sortable();
+list.disableSelection();
+
+var img_div = $('<div></div>');
+var custom_clicker = $('<img width="32px" height="32px" src="' + customisation_icon + '" />');
+custom_clicker.click(
+  function(e) {
+    server_div.css({ left: e.pageX + 5, top: e.pageY + 5 });
+    server_div.toggle();
+  });
+img_div.append(custom_clicker);
+img_div.appendTo($("body"));
+img_div.aqFloater({ attach: 'nw' });
