@@ -7,8 +7,7 @@
 // ==/UserScript==
 
 // list of functions of form (name to check, success (link), failure())
-var servers = [ simple("http://skyrates.jusque.net/skycust/"),
-		simple("http://skyrates.jusque.net/skyrates/") ];
+var servers = [ spreadsheet("tINrGl7OrhT110weszgMnDw") ];
 
 var local = { 'Sadistica': 'http://skyrates.jusque.net/betsy.png' };
 
@@ -23,7 +22,29 @@ function simple(url_base) {
 	     type: "GET",
 	     success: function (response) { success(link); },
 	     error: function (req, stat, err) { failure(); }});
-  }
+  };
+}
+
+function spreadsheet(key) {
+  var avatars;
+  return function(name,success,failure) {
+    var check_avatars = function () {
+      if (avatars[name]) { success(avatars[name]); } else { failure(); }
+    };
+    if (!avatars) {
+      GM_xmlhttpRequest({
+	url: 'http://spreadsheets.google.com/feeds/list/' + key + '/1/public/values?alt=json',
+	method: 'GET',
+	onload: function(response) { response = JSON.parse(response.responseText);
+				     avatars = {};
+				     $.each(response.feed.entry, function(i, entry) {
+				       avatars[entry.gsx$name.$t] = entry.gsx$avatar.$t;
+				     });
+				     check_avatars();
+				   },
+	onerror: function(response) { failure(); }});
+    } else { unsafeWindow.console.log("with cached json: " + name); check_avatars(); }
+  };
 }
 
 function check_asynchronously(span, name, which_server) {
