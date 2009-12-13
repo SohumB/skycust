@@ -62,14 +62,23 @@ function add_override_link(span, name) {
   });
 }
 
-
 function simple(url_base) {
+  var avatars = {};
   return function(name,success,failure) {
-    var link = url_base + name;
-    $.ajax({ url: link,
-	     type: "GET",
-	     success: function (response) { success(link); },
-	     error: function (req, stat, err) { failure(); }});
+    cached = avatars[name];
+    if (cached) {
+      if (cached != "not found") {
+	success(avatars[name]);
+      } else {
+	failure();
+      }
+    } else {
+      var link = url_base + name;
+      $.ajax({ url: link,
+	       type: "GET",
+	       success: function (response) { avatars[name] = link; success(link); },
+	       error: function (req, stat, err) { avatars[name] = "not found"; failure(); }});
+    }
   };
 }
 
