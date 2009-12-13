@@ -6,8 +6,9 @@
 // @require          http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js
 // ==/UserScript==
 
-var servers = [ "http://skyrates.jusque.net/skycust/",
-		"http://skyrates.jusque.net/skyrates/" ];
+// list of functions of form (name to check, success (link), failure())
+var servers = [ simple("http://skyrates.jusque.net/skycust/"),
+		simple("http://skyrates.jusque.net/skyrates/") ];
 
 var local = { 'Sadistica': 'http://skyrates.jusque.net/betsy.png' };
 
@@ -15,14 +16,21 @@ function set_avatar_link(span, link) {
   $(span).find('span.postdetails img').attr({src: link});
 }
 
-function check_asynchronously(span, name, which_server) {
-  if (servers[which_server]) {
-    var link = servers[which_server] + name;
-    $.ajax({ url : link,
+function simple(url_base) {
+  return function(name,success,failure) {
+    var link = url_base + name;
+    $.ajax({ url: link,
 	     type: "GET",
-	     success: function (response) { set_avatar_link(span, link); },
-	     error: function (req,stat,err) { check_asynchronously(span, name, which_server+1); }});
+	     success: function (response) { success(link); },
+	     error: function (req, stat, err) { failure(); }});
   }
+}
+
+function check_asynchronously(span, name, which_server) {
+  var fn = servers[which_server];
+  if (fn) { fn(name,
+	       function(link) { set_avatar_link(span, link); },
+	       function() { check_asynchronously(span, name, which_server+1); }); }
 }
 
 function find_and_set_avatar(span, name) {
