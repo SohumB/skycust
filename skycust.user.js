@@ -33,13 +33,13 @@ function add_override_link(span, name) {
   };
 
   var overrider = $('<div class="overrider"></div>');
-  var default_link = $('<a>Use default image as local override</a>');
+  var default_link = $('<a>Override to original skyrates art</a>');
   default_link.click(function () { set_and_save(original); });
   var custom_textbox = $('<input type="text"></input>');
   custom_textbox.css({ width: 100 });
-  var custom_link = $('<a>Use this custom URL</a>');
+  var custom_link = $('<a>Override to this custom URL</a>');
   custom_link.click(function () { set_and_save(custom_textbox.val()); });
-  var clear_link = $('<a>Clear local override for this avatar</a>');
+  var clear_link = $('<a>Clear this override</a>');
   clear_link.click(function () { set_and_save(undefined); });
 
   overrider
