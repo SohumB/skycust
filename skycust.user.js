@@ -43,7 +43,7 @@ function spreadsheet(key) {
 				     check_avatars();
 				   },
 	onerror: function(response) { failure(); }});
-    } else { unsafeWindow.console.log("with cached json: " + name); check_avatars(); }
+    } else { check_avatars(); }
   };
 }
 
