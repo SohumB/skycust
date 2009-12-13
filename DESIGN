@@ -1,0 +1,7 @@
+It should support a list of servers it can contact in order, so if one server doesn't have the avatar for someone then some other server might. There should always be a manual override.
+
+This has a nice result (similar to the debian system - stable/testing/unstable, and you can mix and match where you install software from) in that there could be servers that accept anything uploaded to it, and there could be the one that we "recommend" that is strictly vetted by a small team, and people can mix and match who they trust to provide images.
+
+Requesting images should be as simple as HTTP GET server/playername. The HTTP protocol for redirects (303 and 301) and nonexistence (404) should be more than rich enough to do fancy stuff, and if someone just wants to stick up a folder on a shared host somewhere with that namescheme they can do that as well. Additional bonus: the browser already implements HTTP for us.
+
+Just server/playername. I don't want to bulk it with requests for /playername.png, then /playername.jpg, then... that's what content negotiation is for. I believe this will work fine.
