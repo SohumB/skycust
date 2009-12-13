@@ -12,11 +12,7 @@ var servers = [ "http://skyrates.jusque.net/skycust/",
 var local = { 'Sadistica': 'http://skyrates.jusque.net/betsy.png' };
 
 function set_avatar_link(span, link) {
-  $(span).find('span.postdetails img').attr({
-    src:    link,
-    width:  80,
-    height: 90
-  });
+  $(span).find('span.postdetails img').attr({src: link});
 }
 
 function check_asynchronously(span, name, which_server) {
