@@ -35,11 +35,24 @@ if (!Array.prototype.map)
   };
 }
 
+function check_existence_of(uri, successfn, failurefn) {
+  GM_xmlhttpRequest({ url: uri,
+		      method: "GET",
+		      onload: successfn,
+		      onerror: failurefn });
+}
+
 function spreadsheet(key) {
   var avatars;
   return function(name,success,failure) {
     var check_avatars = function () {
-      if (avatars[name]) { success(avatars[name]); } else { failure(); }
+      var link = avatars[name];
+      if (link) {
+	unsafeWindow.console.log(link);
+	check_existence_of(link, function() { success(link); }, failure);
+      } else {
+	failure();
+      }
     };
     if (!avatars) {
       GM_xmlhttpRequest({
@@ -77,11 +90,10 @@ function simple(url_base) {
   return memoize(
     function(name, success, failure) {
       var link = url_base + name;
-      $.ajax({ url: link,
-	       type: "GET",
-	       success: function (response) { avatars[name] = link; success(link); },
-	       error: function (req, stat, err) { avatars[name] = "not found"; failure(); }});
-  });
+      check_existence_of(link,
+			 function (response) { avatars[name] = link; success(link); },
+			 function (req, stat, err) { avatars[name] = "not found"; failure(); });
+    });
 }
 
 // list of functions of form (name to check, success (link), failure())
