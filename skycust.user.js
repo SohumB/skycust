@@ -124,7 +124,7 @@ var servers_text = GM_getValue('server_list');
 if (servers_text) {
   servers_text = JSON.parse(servers_text);
 } else {
-  servers_text = [ 'spreadsheet("tINrGl7OrhT110weszgMnDw")' ];
+  servers_text = [ spreadsheet("txW-R89lun35ZOhZGM8N50g"), spreadsheet("tSOPONq3I1v4-Amk0INakgg") ]; // default of Skyrates Style, then Alternate Style (tSotW)
 }
 
 var servers = servers_text.map(function(val, ind, thing) { return eval(val); });
