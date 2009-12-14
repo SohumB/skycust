@@ -259,7 +259,7 @@ outer_div
 var add_div = $('<div></div>');
 add_div.css({ height: '90%', width: '40%', float: 'left'});
 var simple_label = $('<label>Simple:</label>');
-var sheet_label = $('<label>Spreadsheet:</label>');
+var sheet_label = $('<label>Spreadsheet key:</label>');
 var custom_label = $('<label>Custom:</label>');
 var simple_box = $('<input type="text">');
 var sheet_box = $('<input type="text">');
