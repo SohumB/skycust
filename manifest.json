@@ -1,0 +1,15 @@
+{
+  "name": "Skycust",
+  "version": "1.0",
+  "description": "A forum avatar-replacer based on a remote canonical image source.",
+  "icons": { "32": "icon.png" },
+  "background_page": "bg.html",
+  "permissions": ["http://*/"],
+  "content_scripts": [
+    {
+      "matches": ["http://skyrates.net/forum/*"],
+      "js": ["jquery.min.js", "jquery-ui.min.js", "aqFloater.js", "skycust.user.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
