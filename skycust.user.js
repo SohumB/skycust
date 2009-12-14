@@ -283,7 +283,7 @@ list.change(function(e) { custom_area.val($(this).attr('value')); });
 
 up_but.click(function() {
   var curr = current_selection();
-  if (curr.prev()) {
+  if (curr.prev().length > 0) {
     var tmp = curr.clone().insertBefore(curr.prev());
     curr.remove();
     tmp.select();
@@ -291,7 +291,7 @@ up_but.click(function() {
 });
 down_but.click(function() {
   var curr = current_selection();
-  if (curr.next()) {
+  if (curr.next().length > 0) {
     var tmp = curr.clone().insertAfter(curr.next());
     curr.remove();
     tmp.select();
