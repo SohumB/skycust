@@ -165,12 +165,6 @@ function find_and_set_avatar(span, name) {
   check_asynchronously(span, name, 0);
 }
 
-$('td:has(span.name):has(span.postdetails)').each(function () {
-  var name = $(this).find('span.name').text();
-  add_override_link(this, name);
-  find_and_set_avatar(this, name);
-});
-
 $("head").append(
   '<style type="text/css">' +
     '.sortable { list-style-type: none; margin: 0; padding: 0; }' +
@@ -326,3 +320,9 @@ custom_clicker.click(
 img_div.append(custom_clicker);
 img_div.appendTo($("body"));
 img_div.aqFloater({ attach: 'nw' });
+
+$('td:has(span.name):has(span.postdetails)').each(function () {
+  var name = $(this).find('span.name').text();
+  add_override_link(this, name);
+  find_and_set_avatar(this, name);
+});
