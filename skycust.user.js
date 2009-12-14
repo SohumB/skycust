@@ -340,6 +340,7 @@ button.click(function() {
   servers_text = [];
   list.children().each(function (i, op) { servers_text[i] = $(op).attr('value'); });
   save_servers();
+  server_div.hide();
 });
 button_div.append(button);
 
