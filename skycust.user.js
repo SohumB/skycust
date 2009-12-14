@@ -220,6 +220,7 @@ function add_to_list(list, itext) {
   var op = $('<option></option>');
   update_with_text(op, itext);
   list.append(op);
+  op.attr('selected', 'selected');
 }
 
 var server_div = $('<div id="server_editor"></div>');
@@ -280,7 +281,7 @@ up_but.click(function() {
   if (curr.prev().length > 0) {
     var tmp = curr.clone().insertBefore(curr.prev());
     curr.remove();
-    tmp.select();
+    tmp.attr('selected', 'selected');
   }
 });
 down_but.click(function() {
@@ -288,7 +289,7 @@ down_but.click(function() {
   if (curr.next().length > 0) {
     var tmp = curr.clone().insertAfter(curr.next());
     curr.remove();
-    tmp.select();
+    tmp.attr('selected', 'selected');
   }
 });
 add_but.click(function() { add_to_list(list, "new value"); });
