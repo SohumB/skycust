@@ -38,6 +38,11 @@ if (!Array.prototype.map)
   };
 }
 
+String.prototype.getHostname = function() {
+  var re = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
+  return this.match(re)[1].toString();
+}
+
 function check_existence_of(uri, successfn, failurefn) {
   GM_xmlhttpRequest({ url: uri,
 		      method: "GET",
@@ -80,8 +85,7 @@ name_checkers.spreadsheet = function(key) {
 	method: 'GET',
 	onload: function(response) {
 	  response = JSON.parse(response.responseText);
-	  var title = response.feed.title.$t;
-	  cont('g: ' + title);
+	  cont(response.feed.title.$t);
 	}
       });
     }, 0);
@@ -113,7 +117,7 @@ function simple(url_base) {
 			 function (req, stat, err) { avatars[name] = "not found"; failure(); });
     });
 }
-name_checkers.simple = function(addr) { return function(cont) { cont('s: ' + addr); }; };
+name_checkers.simple = function(addr) { return function(cont) { cont(addr.getHostname); }; };
 
 // list of functions of form (name to check, success (link), failure())
 var servers_text = GM_getValue('server_list');
@@ -152,7 +156,7 @@ function get_name(str, cont) {
 
 function set_avatar_link(span, link, where) {
   var alt = "Click to override this custom avatar";
-  if (where) { alt = alt + " (from " + where + ")"; }
+  if (where) { alt = alt + " (recommended by " + where + ")"; }
   $(span).find('span.postdetails img').attr({ src: link, title: alt });
 }
 
@@ -207,7 +211,7 @@ function check_asynchronously(span, name, which_server) {
 
 function find_and_set_avatar(span, name) {
   var link = local[name];
-  if (link) { set_avatar_link(span,link,"local override"); return; }
+  if (link) { set_avatar_link(span,link,"your local override"); return; }
 
   check_asynchronously(span, name, 0);
 }
