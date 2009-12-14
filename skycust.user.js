@@ -205,6 +205,21 @@ $("head").append(
 function update_with_text(op, itext) {
   op.attr({ value: itext });
   op.text(itext);
+  var simple = function(addr) { op.text('s: ' + addr); };
+  var spreadsheet = function(key) {
+    window.setTimeout(function () { // for some reason this is necessary...
+      GM_xmlhttpRequest({
+	url: 'http://spreadsheets.google.com/feeds/worksheets/' + key + '/public/basic?alt=json',
+	method: 'GET',
+	onload: function(response) {
+	  response = JSON.parse(response.responseText);
+	  var title = response.feed.title.$t;
+	  op.text('g: ' + title);
+	}
+      });
+    }, 0);
+  };
+  if (itext.slice(0,11) == "spreadsheet" || itext.slice(0,6) == "simple") { eval(itext); }
 }
 
 function add_to_list(list, itext) {
@@ -264,7 +279,7 @@ simple_box.change(function(e) { update_with_text(current_selection(), wrap_with(
 sheet_box.change(function(e) { update_with_text(current_selection(), wrap_with("spreadsheet", $(this).val())); list.change(); });
 custom_area.change(function(e) { update_with_text(current_selection(), $(this).val()); });
 
-list.change(function(e) { custom_area.val($(this).val()); });
+list.change(function(e) { custom_area.val($(this).attr('value')); });
 
 up_but.click(function() {
   var curr = current_selection();
@@ -291,7 +306,7 @@ var button = $('<button type="button">Save</button>');
 button.css({ width: 'auto' });
 button.click(function() {
   servers_text = [];
-  list.children().each(function (i, op) { servers_text[i] = op.text; });
+  list.children().each(function (i, op) { servers_text[i] = $(op).attr('value'); });
   save_servers();
 });
 button_div.append(button);
