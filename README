@@ -1,4 +1,4 @@
-This is a greasemonkey userscript (that runs on Chrome as well, natively, and possibly other browsers as well).
+This is a greasemonkey userscript that runs on browsers that support userscripts. It does not run on Chrome natively, as Chrome userscripts don't support @require or cross-domain xhr. (See the chrome-extension branch for an extension that does work on Chrome.)
 
 It requests a canonical source for avatar replacements for people on a specific phpBB forum.
 
