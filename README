@@ -1,7 +1,7 @@
 This is an (unpacked) Chrome extension, ready for building. This is necessary as Chrome userscripts don't support @require or cross-domain xhr.
 
-It requests a canonical source for avatar replacements for people on a specific phpBB forum.
+This requests avatar replacements for people on a forum.
 
-It has a hardcoded list of servers to try in order for images and a hardcoded phpBB forum to replace images on. It is intended to be used with the game "Skyrates", at forum.skyrates.net.
+It has a user-editable list of servers to try in order for images and a hardcoded forum to replace images on. It is intended to be used with the game "Skyrates", at forum.skyrates.net, but that's not a fundamental limitation of the code.
 
 NOTE: skycust.user.js is /not/ a greasemonkey userscript. If you're looking for that, see the master branch.
