@@ -275,11 +275,11 @@ add_div
 function wrap_with(out, arg) { return out + '("' + arg + '")'; }
 function current_selection() { return $($("option:selected", list)[0]); }
 
-simple_box.change(function(e) { update_with_text(current_selection(), wrap_with("simple", $(this).val())); list.change(); });
-sheet_box.change(function(e) { update_with_text(current_selection(), wrap_with("spreadsheet", $(this).val())); list.change(); });
-custom_area.change(function(e) { update_with_text(current_selection(), $(this).val()); });
+simple_box.change(function(e) { update_with_text(current_selection(), wrap_with("simple", $(this).val())); list.change(); list.effect("highlight", {}, 1000); });
+sheet_box.change(function(e) { update_with_text(current_selection(), wrap_with("spreadsheet", $(this).val())); list.change(); list.effect("highlight", {}, 1000); });
+custom_area.change(function(e) { update_with_text(current_selection(), $(this).val()); list.effect("highlight", {}, 1000); });
 
-list.change(function(e) { custom_area.val($(this).attr('value')); });
+list.change(function(e) { custom_area.val($(this).attr('value')); custom_area.effect("highlight", {}, 1000); });
 
 up_but.click(function() {
   var curr = current_selection();
