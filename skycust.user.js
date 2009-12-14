@@ -260,108 +260,117 @@ function add_to_list(list, itext) {
   op.attr('selected', 'selected');
 }
 
-var server_div = $('<div id="server_editor"></div>');
+function attach_customisation_window() {
+  var server_div = $('<div id="server_editor"></div>');
 
-var outer_div = $('<div></div>');
-outer_div.css({ height: '100%', width: '60%', float: 'left'});
-var list_div = $('<div></div>');
-list_div.css({ height: '100%', width: '85%', float: 'left' });
-var list = $('<select size=12></select>');
-list.css({ height: '100%', width: '95%' });
-for (i in servers_text) { add_to_list(list,servers_text[i]); }
-var button_div = $('<div></div>');
-button_div.css({ width: '10%', height: '100%', float: 'left' });
-var up_but = $('<button type="button"><img src="' + up_icon + '" /></button>');
-var down_but = $('<button type="button"><img src="' + down_icon + '" /></button>');
-var add_but = $('<button type="button"><img src="' + add_icon + '" /></button>');
-var del_but = $('<button type="button"><img src="' + del_icon + '" /></button>');
+  var outer_div = $('<div></div>');
+  outer_div.css({ height: '100%', width: '60%', float: 'left'});
+  var list_div = $('<div></div>');
+  list_div.css({ height: '100%', width: '85%', float: 'left' });
+  var list = $('<select size=12></select>');
+  list.css({ height: '100%', width: '95%' });
+  for (i in servers_text) { add_to_list(list,servers_text[i]); }
+  var button_div = $('<div></div>');
+  button_div.css({ width: '10%', height: '100%', float: 'left' });
+  var up_but = $('<button type="button"><img src="' + up_icon + '" /></button>');
+  var down_but = $('<button type="button"><img src="' + down_icon + '" /></button>');
+  var add_but = $('<button type="button"><img src="' + add_icon + '" /></button>');
+  var del_but = $('<button type="button"><img src="' + del_icon + '" /></button>');
 
-list_div.append(list);
+  list_div.append(list);
 
-button_div
-  .append(up_but)
-  .append(down_but)
-  .append(add_but)
-  .append(del_but);
+  button_div
+    .append(up_but)
+    .append(down_but)
+    .append(add_but)
+    .append(del_but);
 
-outer_div
-  .append(list_div)
-  .append(button_div);
+  outer_div
+    .append(list_div)
+    .append(button_div);
 
-var add_div = $('<div></div>');
-add_div.css({ height: '90%', width: '40%', float: 'left'});
-var simple_label = $('<label>Simple:</label>');
-var sheet_label = $('<label>Spreadsheet key:</label>');
-var custom_label = $('<label>Custom:</label>');
-var simple_box = $('<input type="text">');
-var sheet_box = $('<input type="text">');
-var custom_area = $('<textarea rows="5"></textarea>');
-simple_label.append(simple_box);
-sheet_label.append(sheet_box);
-custom_label.append(custom_area);
-add_div
-  .append(simple_label).append("<br>")
-  .append(sheet_label).append("<br><br>")
-  .append(custom_label);
+  var add_div = $('<div></div>');
+  add_div.css({ height: '90%', width: '40%', float: 'left'});
+  var simple_label = $('<label>Simple:</label>');
+  var sheet_label = $('<label>Spreadsheet key:</label>');
+  var custom_label = $('<label>Custom:</label>');
+  var simple_box = $('<input type="text">');
+  var sheet_box = $('<input type="text">');
+  var custom_area = $('<textarea rows="5"></textarea>');
+  simple_label.append(simple_box);
+  sheet_label.append(sheet_box);
+  custom_label.append(custom_area);
+  add_div
+    .append(simple_label).append("<br>")
+    .append(sheet_label).append("<br><br>")
+    .append(custom_label);
 
-function wrap_with(out, arg) { return out + '("' + arg + '")'; }
-function current_selection() { return $($("option:selected", list)[0]); }
+  var wrap_with = function(out, arg) { return out + '("' + arg + '")'; }
+  var current_selection = function() { return $($("option:selected", list)[0]); }
 
-simple_box.change(function(e) { update_with_text(current_selection(), wrap_with("simple", $(this).val())); list.change(); list.effect("highlight", {}, 1000); });
-sheet_box.change(function(e) { update_with_text(current_selection(), wrap_with("spreadsheet", $(this).val())); list.change(); list.effect("highlight", {}, 1000); });
-custom_area.change(function(e) { update_with_text(current_selection(), $(this).val()); list.effect("highlight", {}, 1000); });
+  simple_box.change(function(e) { update_with_text(current_selection(), wrap_with("simple", $(this).val())); list.change(); list.effect("highlight", {}, 1000); });
+  sheet_box.change(function(e) { update_with_text(current_selection(), wrap_with("spreadsheet", $(this).val())); list.change(); list.effect("highlight", {}, 1000); });
+  custom_area.change(function(e) { update_with_text(current_selection(), $(this).val()); list.effect("highlight", {}, 1000); });
 
-list.change(function(e) { custom_area.val($(this).attr('value')); custom_area.effect("highlight", {}, 1000); });
+  list.change(function(e) { custom_area.val($(this).attr('value')); custom_area.effect("highlight", {}, 1000); });
 
-up_but.click(function() {
-  var curr = current_selection();
-  if (curr.prev().length > 0) {
-    var tmp = curr.clone().insertBefore(curr.prev());
-    curr.remove();
-    tmp.attr('selected', 'selected');
-  }
-});
-down_but.click(function() {
-  var curr = current_selection();
-  if (curr.next().length > 0) {
-    var tmp = curr.clone().insertAfter(curr.next());
-    curr.remove();
-    tmp.attr('selected', 'selected');
-  }
-});
-add_but.click(function() { add_to_list(list, "new value"); });
-del_but.click(function() { current_selection().remove(); });
-
-var button_div = $('<div></div>');
-button_div.css({ height: '8%', width: '100%' });
-var button = $('<button type="button">Save</button>');
-button.css({ width: 'auto' });
-button.click(function() {
-  servers_text = [];
-  list.children().each(function (i, op) { servers_text[i] = $(op).attr('value'); });
-  save_servers();
-  server_div.hide();
-});
-button_div.append(button);
-
-server_div.append(outer_div).append(add_div).append(button_div);
-server_div.css({ 'background-color': 'white', 'border': '1px solid black', 'position': 'absolute', width: '34%', padding: '1em' });
-server_div.appendTo($("body"));
-server_div.hide();
-
-var img_div = $('<div></div>');
-var custom_clicker = $('<img width="32px" height="32px" src="' + customisation_icon + '" />');
-custom_clicker.click(
-  function(e) {
-    server_div.css({ left: e.pageX + 5, top: e.pageY + 5 });
-    server_div.toggle();
+  up_but.click(function() {
+    var curr = current_selection();
+    if (curr.prev().length > 0) {
+      var tmp = curr.clone().insertBefore(curr.prev());
+      curr.remove();
+      tmp.attr('selected', 'selected');
+    }
   });
-img_div.append(custom_clicker);
-img_div.appendTo($("body"));
-img_div.aqFloater({ attach: 'nw' });
+  down_but.click(function() {
+    var curr = current_selection();
+    if (curr.next().length > 0) {
+      var tmp = curr.clone().insertAfter(curr.next());
+      curr.remove();
+      tmp.attr('selected', 'selected');
+    }
+  });
+  add_but.click(function() { add_to_list(list, "new value"); });
+  del_but.click(function() { current_selection().remove(); });
 
-$('td:has(span.name):has(span.postdetails)').each(function () {
+  var button_div = $('<div></div>');
+  button_div.css({ height: '8%', width: '100%' });
+  var button = $('<button type="button">Save</button>');
+  button.css({ width: 'auto' });
+  button.click(function() {
+    servers_text = [];
+    list.children().each(function (i, op) { servers_text[i] = $(op).attr('value'); });
+    save_servers();
+    server_div.hide();
+  });
+  button_div.append(button);
+
+  server_div.append(outer_div).append(add_div).append(button_div);
+  server_div.css({ 'background-color': 'white', 'border': '1px solid black', 'position': 'absolute', width: '34%', padding: '1em' });
+  server_div.appendTo($("body"));
+  server_div.hide();
+
+  var img_div = $('<div></div>');
+  var custom_clicker = $('<img width="32px" height="32px" src="' + customisation_icon + '" />');
+  custom_clicker.click(
+    function(e) {
+      server_div.css({ left: e.pageX + 5, top: e.pageY + 5 });
+      server_div.toggle();
+    });
+  img_div.append(custom_clicker);
+  img_div.appendTo($("body"));
+  img_div.aqFloater({ attach: 'nw', duration: 1000 });
+}
+
+var attach = false;
+
+  $('td:has(span.name):has(span.postdetails)').each(function () {
+  if (!attach) {
+    attach = true;
+    attach_customisation_window();
+  }
   var name = $(this).find('span.name').text();
   add_override_link(this, name);
   find_and_set_avatar(this, name);
 });
+
