@@ -177,6 +177,7 @@ $("head").append(
     '.sortable li { padding: 0.4em; font-size: 0.8em; }' +
     'a { cursor: pointer; }' +
     'button { display:block;' +
+    'padding: 0px;' +
     'float:left;' +
     'margin:0 7px 0 0;' +
     'background-color:#f5f5f5;' +
@@ -197,7 +198,8 @@ $("head").append(
     'padding:0;' +
     'border:none;' +
     'width:16px;' +
-    'height:16px; }'
+    'height:16px; }' +
+  '</style>'
 );
 
 function update_with_text(op, itext) {
