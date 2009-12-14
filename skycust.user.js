@@ -70,10 +70,26 @@ function spreadsheet(key) {
   };
 }
 
+name_checkers.spreadsheet = function(key) {
+  return function(cont) {
+    window.setTimeout(function () { // for some reason this is necessary...
+      GM_xmlhttpRequest({
+	url: 'http://spreadsheets.google.com/feeds/worksheets/' + key + '/public/basic?alt=json',
+	method: 'GET',
+	onload: function(response) {
+	  response = JSON.parse(response.responseText);
+	  var title = response.feed.title.$t;
+	  cont('g: ' + title);
+	}
+      });
+    }, 0);
+  };
+};
+
 function memoize(fn) {
   var avatars = {};
   return function(name,success,failure) {
-    cached = avatars[name];
+    var cached = avatars[name];
     if (cached) {
       if (cached != "not found") {
 	success(avatars[name]);
@@ -126,6 +142,8 @@ function add_override_link(span, name) {
   var img = $(span).find('span.postdetails img');
   var original = img.attr("src");
   var colour = img.parent().parent().css("background-color");
+
+  var overrider = $('<div class="overrider"></div>');
   var set_and_save = function(new_local) {
     local[name] = new_local;
     save_local();
@@ -133,7 +151,6 @@ function add_override_link(span, name) {
     overrider.hide();
   };
 
-  var overrider = $('<div class="overrider"></div>');
   var default_link = $('<a>Override to original skyrates art</a>');
   default_link.click(function () { set_and_save(original); });
   var custom_textbox = $('<input type="text"></input>');
