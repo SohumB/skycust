@@ -117,7 +117,7 @@ function simple(url_base) {
 			 function (req, stat, err) { avatars[name] = "not found"; failure(); });
     });
 }
-name_checkers.simple = function(addr) { return function(cont) { cont(addr.getHostname); }; };
+name_checkers.simple = function(addr) { return function(cont) { cont(addr.getHostname()); }; };
 
 // list of functions of form (name to check, success (link), failure())
 var servers_text = GM_getValue('server_list');
