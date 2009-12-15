@@ -23,6 +23,11 @@
 	    }
 	  }
 	  xhr.send();
+	} else if (request.get_local) {
+	  sendResponse(localStorage[request.key]);
+	} else if (request.save_local) {
+	  localStorage[request.key] = request.value;
+	  sendResponse(null);
 	} else if (request.check_name_cache) {
 	  var name = request.check_name_cache;
 	  sendResponse(names[name]);

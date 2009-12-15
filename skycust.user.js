@@ -94,21 +94,14 @@ function simple(url_base) {
 }
 
 // list of functions of form (name to check, success (link), failure())
-var servers_text = GM_getValue('server_list');
-if (servers_text) {
-  servers_text = JSON.parse(servers_text);
-} else {
-  servers_text = SERVERS_TEXT_DEFAULT;
-}
-
-var servers = servers_text.map(function(val, ind, thing) { return eval(val); });
+var servers;
+var servers_text;
 function save_servers() {
   save_servers_text(servers_text);
   servers = servers_text.map(function(val, ind, thing) { return eval(val); });
 }
 
-var local = GM_getValue('override_local');
-if (local) { local = JSON.parse(local); } else { local = {}; }
+var local;
 function save_local() {
   GM_setValue('override_local', JSON.stringify(local));
 }
@@ -176,14 +169,27 @@ function find_and_set_avatar(span, name) {
 }
 
 var attach = false;
+GM_getValue('override_local', null, function(l) {
+  local = l;
+  if (local) { local = JSON.parse(local); } else { local = {}; }
+  GM_getValue('server_list', null, function (s) {
+    servers_text = s;
+    if (servers_text) {
+      servers_text = JSON.parse(servers_text);
+    } else {
+      servers_text = SERVERS_TEXT_DEFAULT;
+    }
 
-  $('td:has(span.name):has(span.postdetails)').each(function () {
-  if (!attach) {
-    attach = true;
-    attach_customisation_window();
-  }
-  var name = $(this).find('span.name').text();
-  add_override_link(this, name);
-  find_and_set_avatar(this, name);
+    servers = servers_text.map(function(val, ind, thing) { return eval(val); });
+
+    $('td:has(span.name):has(span.postdetails)').each(function () {
+      if (!attach) {
+	attach = true;
+	attach_customisation_window();
+      }
+      var name = $(this).find('span.name').text();
+      add_override_link(this, name);
+      find_and_set_avatar(this, name);
+    });
+  });
 });
-

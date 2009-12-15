@@ -4,12 +4,7 @@
   <script src="jquery-ui.min.js"></script>
   <script src="gm_compatibility.js"></script>
   <script>
-var servers_text = GM_getValue('server_list');
-if (servers_text) {
-  servers_text = JSON.parse(servers_text);
-} else {
-  servers_text = SERVERS_TEXT_DEFAULT;
-}
+var servers_text = [];
 
 var names;
 
@@ -35,7 +30,16 @@ $(document).ready(function () {
   var list = $('<select size=12></select>');
   list.css({ height: '100%', width: '95%' });
 
-  for (i in servers_text) { add_to_list(list,servers_text[i]); }
+  function refresh_list() {
+    servers_text = localStorage['server_list'];
+    if (servers_text) {
+      servers_text = JSON.parse(servers_text);
+    } else {
+      servers_text = SERVERS_TEXT_DEFAULT;
+    }
+    for (i in servers_text) { add_to_list(list,servers_text[i]); }
+  }
+  refresh_list();
 
   var button_div = $('<div></div>');
   button_div.css({ width: '10%', height: '100%', float: 'left' });
@@ -108,6 +112,7 @@ $(document).ready(function () {
     servers_text = [];
     list.children().each(function (i, op) { servers_text[i] = $(op).attr('value'); });
     save_servers_text(servers_text);
+    refresh_list();
   });
   save_div.append(save);
 
