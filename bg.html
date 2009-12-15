@@ -1,6 +1,7 @@
 <html>
   <script src="jquery.min.js"></script>
   <script>
+  var names = [];
     chrome.extension.onRequest.addListener(
       function(request, sender, sendResponse) {
 	if (request.ajax) {
@@ -22,6 +23,15 @@
 	    }
 	  }
 	  xhr.send();
+	} else if (request.check_name_cache) {
+	  var name = request.check_name_cache;
+	  sendResponse(names[name]);
+	} else if (request.set_name_cache) {
+	  names[request.set_name_cache] = request.to;
+	  sendResponse(null);
+	} else if (request.attach_customisation_window) {
+	  chrome.pageAction.show(sender.tab.id);
+	  sendResponse(null);
 	}
       });
   </script>
