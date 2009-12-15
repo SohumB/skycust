@@ -31,6 +31,7 @@ $(document).ready(function () {
   list.css({ height: '100%', width: '95%' });
 
   function refresh_list() {
+    list.children().remove();
     servers_text = localStorage['server_list'];
     if (servers_text) {
       servers_text = JSON.parse(servers_text);
