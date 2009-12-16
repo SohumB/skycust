@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name             Skycust
 // @description      A forum avatar-replacer based on a remote canonical image source.
-// @include          http://skyrates.net/forum/*
+// @include          http://skyrates.net/*
 // @require          http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js
 // @require          http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js
 // @require          http://plugins.jquery.com/files/aqFloater.js.txt
@@ -31,6 +31,10 @@ if (!Array.prototype.map)
 String.prototype.getHostname = function() {
   var re = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
   return this.match(re)[1].toString();
+}
+
+String.prototype.strip = function() {
+  return (this.replace(/^\W+/,'')).replace(/\W+$/,'');
 }
 
 function check_existence_of(uri, successfn, failurefn) {
@@ -106,14 +110,13 @@ function save_local() {
   GM_setValue('override_local', JSON.stringify(local));
 }
 
-function set_avatar_link(span, link, where) {
+function set_avatar_link(img, link, where) {
   var alt = "Click to override this custom avatar";
   if (where) { alt = alt + " (recommended by " + where + ")"; }
-  $(span).find('span.postdetails img').attr({ src: link, title: alt });
+  img.attr({ src: link, title: alt });
 }
 
-function add_override_link(span, name) {
-  var img = $(span).find('span.postdetails img');
+function add_override_link(img, name) {
   var original = img.attr("src");
   var colour = img.parent().parent().css("background-color");
 
@@ -154,21 +157,23 @@ function add_override_link(span, name) {
   });
 }
 
-function check_asynchronously(span, name, which_server) {
+function check_asynchronously(img, name, which_server) {
   var fn = servers[which_server];
   if (fn) { fn(name,
-	       function(link) { get_name(servers_text[which_server], function(name) { set_avatar_link(span, link, name); }); },
-	       function() { check_asynchronously(span, name, which_server+1); }); }
+	       function(link) { get_name(servers_text[which_server], function(name) { set_avatar_link(img, link, name); }); },
+	       function() { check_asynchronously(img, name, which_server+1); }); }
 }
 
-function find_and_set_avatar(span, name) {
+function find_and_set_avatar(img, name) {
   var link = local[name];
-  if (link) { set_avatar_link(span,link,"your local override"); return; }
+  if (link) { set_avatar_link(img,link,"your local override"); return; }
 
-  check_asynchronously(span, name, 0);
+  check_asynchronously(img, name, 0);
 }
 
 var attach = false;
+var images = [];
+
 GM_getValue('override_local', null, function(l) {
   local = l;
   if (local) { local = JSON.parse(local); } else { local = {}; }
@@ -182,14 +187,36 @@ GM_getValue('override_local', null, function(l) {
 
     servers = servers_text.map(function(val, ind, thing) { return eval(val); });
 
+    var cap = $('#cap');
+    if (cap.find('#avClip').length > 0) {
+      var avClip = cap.find('#avClip');
+      avClip.attr_old = avClip.attr;
+      avClip.attr = function(thing) {
+	if (thing.src) { $(this).css('background-image', 'url(' + thing.src + ')'); thing.src = undefined; }
+	this.attr_old(thing);
+      } // this is such a beautiful ugly hack. I am proud and ashamed simultaneously.
+      images.push({ name: cap.find('p.name').text().strip(), img: avClip });
+    };
+
     $('td:has(span.name):has(span.postdetails)').each(function () {
+      var sthis = $(this);
+      images.push({ name: sthis.find('span.name').text().strip(), img: sthis.find('span.postdetails img') });
+    });
+
+    $('td.character').each(function () {
+      var sthis = $(this);
+      images.push({ name: sthis.find('td.name').text().strip(), img: sthis.find('img') });
+    });
+
+    for (i in images) {
+      var av = images[i];
+      unsafeWindow.console.log(av);
       if (!attach) {
 	attach = true;
 	attach_customisation_window();
       }
-      var name = $(this).find('span.name').text();
-      add_override_link(this, name);
-      find_and_set_avatar(this, name);
-    });
+      add_override_link(av.img, av.name);
+      find_and_set_avatar(av.img, av.name);
+    };
   });
 });

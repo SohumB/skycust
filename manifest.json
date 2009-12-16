@@ -12,7 +12,7 @@
   "permissions": ["http://*/"],
   "content_scripts": [
     {
-      "matches": ["http://skyrates.net/forum/*"],
+      "matches": ["http://skyrates.net/*"],
       "js": ["jquery.min.js", "jquery-ui.min.js", "gm_compatibility.js", "skycust.user.js"],
       "run_at": "document_end"
     }
