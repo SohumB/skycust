@@ -166,7 +166,7 @@ function set_avatar_link(img, link, where) {
 
 function add_override_link(img, name) {
   var original = img.attr("src");
-  var colour = img.parent().parent().css("background-color");
+  var colour = 'white'; //img.parent().parent().css("background-color"); nice, but doesn't work generally.
 
   var overrider = $('<div class="overrider"></div>');
   var set_and_save = function(new_local) {
