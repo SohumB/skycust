@@ -391,7 +391,6 @@ $('td.character').each(function () {
 
 for (i in images) {
   var av = images[i];
-  unsafeWindow.console.log(av);
   if (!attach) {
     attach = true;
     attach_customisation_window();
