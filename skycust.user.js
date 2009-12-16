@@ -124,7 +124,7 @@ function add_override_link(img, name) {
   var set_and_save = function(new_local) {
     local[name] = new_local;
     save_local();
-    find_and_set_avatar(span, name);
+    find_and_set_avatar(img, name);
     overrider.hide();
   };
 
@@ -193,7 +193,7 @@ GM_getValue('override_local', null, function(l) {
       avClip.attr_old = avClip.attr;
       avClip.attr = function(thing) {
 	if (thing.src) { $(this).css('background-image', 'url(' + thing.src + ')'); thing.src = undefined; }
-	this.attr_old(thing);
+	return this.attr_old(thing);
       } // this is such a beautiful ugly hack. I am proud and ashamed simultaneously.
       images.push({ name: cap.find('p.name').text().strip(), img: avClip });
     };
