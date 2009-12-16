@@ -172,7 +172,7 @@ function add_override_link(img, name) {
   var set_and_save = function(new_local) {
     local[name] = new_local;
     save_local();
-    find_and_set_avatar(span, name);
+    find_and_set_avatar(img, name);
     overrider.hide();
   };
 
