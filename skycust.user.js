@@ -192,7 +192,11 @@ GM_getValue('override_local', null, function(l) {
       var avClip = cap.find('#avClip');
       avClip.attr_old = avClip.attr;
       avClip.attr = function(thing) {
-	if (thing.src) { $(this).css('background-image', 'url(' + thing.src + ')'); thing.src = undefined; }
+	if (thing.src) {
+	  $(this).css('background-image', 'url(' + thing.src + ')'); thing.src = undefined;
+	} else if (thing == "src") {
+	  return $(this).css('background-image').slice(4,-1);
+	}
 	return this.attr_old(thing);
       } // this is such a beautiful ugly hack. I am proud and ashamed simultaneously.
       images.push({ name: cap.find('p.name').text().strip(), img: avClip });
