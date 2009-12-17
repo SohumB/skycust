@@ -361,6 +361,7 @@ function attach_customisation_window() {
       server_div.toggle();
     });
   img_div.append(custom_clicker);
+  img_div.css({ 'position': 'absolute', 'left': 0, 'top': 0 });
   img_div.appendTo($("body"));
   img_div.aqFloater({ attach: 'nw', duration: 1000 });
 }
