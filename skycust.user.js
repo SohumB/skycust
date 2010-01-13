@@ -202,9 +202,9 @@ GM_getValue('override_local', null, function(l) {
       images.push({ name: cap.find('p.name').text().strip(), img: avClip });
     };
 
-    $('td:has(span.name):has(span.postdetails)').each(function () {
+    $('tbody:has(td.profile)').each(function () {
       var sthis = $(this);
-      images.push({ name: sthis.find('span.name').text().strip(), img: sthis.find('span.postdetails img') });
+      images.push({ name: sthis.find('.postauthor').text().strip(), img: $(sthis.find('img')[2]) });
     });
 
     $('td.character').each(function () {
