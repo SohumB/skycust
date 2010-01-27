@@ -175,51 +175,53 @@ var attach = false;
 var images = [];
 
 GM_getValue('override_local', null, function(l) {
-  local = l;
-  if (local) { local = JSON.parse(local); } else { local = {}; }
-  GM_getValue('server_list', null, function (s) {
-    servers_text = s;
-    if (servers_text) {
-      servers_text = JSON.parse(servers_text);
-    } else {
-      servers_text = SERVERS_TEXT_DEFAULT;
+local = l;
+if (local) { local = JSON.parse(local); } else { local = {}; }
+
+
+GM_getValue('server_list', null, function (s) {
+servers_text = s;
+
+
+if (servers_text) {
+  servers_text = JSON.parse(servers_text);
+} else {
+  servers_text = SERVERS_TEXT_DEFAULT;
+}
+servers = servers_text.map(function(val, ind, thing) { return eval(val); });
+var cap = $('#cap');
+if (cap.find('#avClip').length > 0) {
+  var avClip = cap.find('#avClip');
+  avClip.attr_old = avClip.attr;
+  avClip.attr = function(thing) {
+    if (thing.src) {
+      $(this).css('background-image', 'url(' + thing.src + ')'); thing.src = undefined;
+    } else if (thing == "src") {
+      return $(this).css('background-image').slice(4,-1);
     }
+    return this.attr_old(thing);
+  } // this is such a beautiful ugly hack. I am proud and ashamed simultaneously.
+  images.push({ name: cap.find('p.name').text().strip(), img: avClip });
+};
 
-    servers = servers_text.map(function(val, ind, thing) { return eval(val); });
+$('tbody:has(td.profile)').each(function () {
+  var sthis = $(this);
+  images.push({ name: sthis.find('.postauthor').text().strip(), img: $(sthis.find('img')[2]) });
+});
 
-    var cap = $('#cap');
-    if (cap.find('#avClip').length > 0) {
-      var avClip = cap.find('#avClip');
-      avClip.attr_old = avClip.attr;
-      avClip.attr = function(thing) {
-	if (thing.src) {
-	  $(this).css('background-image', 'url(' + thing.src + ')'); thing.src = undefined;
-	} else if (thing == "src") {
-	  return $(this).css('background-image').slice(4,-1);
-	}
-	return this.attr_old(thing);
-      } // this is such a beautiful ugly hack. I am proud and ashamed simultaneously.
-      images.push({ name: cap.find('p.name').text().strip(), img: avClip });
-    };
+$('td.character').each(function () {
+  var sthis = $(this);
+  images.push({ name: sthis.find('td.name').text().strip(), img: sthis.find('img') });
+});
 
-    $('tbody:has(td.profile)').each(function () {
-      var sthis = $(this);
-      images.push({ name: sthis.find('.postauthor').text().strip(), img: $(sthis.find('img')[2]) });
-    });
-
-    $('td.character').each(function () {
-      var sthis = $(this);
-      images.push({ name: sthis.find('td.name').text().strip(), img: sthis.find('img') });
-    });
-
-    for (i in images) {
-      var av = images[i];
-      if (!attach) {
-	attach = true;
-	attach_customisation_window();
-      }
-      add_override_link(av.img, av.name);
-      find_and_set_avatar(av.img, av.name);
-    };
-  });
+for (i in images) {
+  var av = images[i];
+  if (!attach) {
+    attach = true;
+    attach_customisation_window();
+  }
+  add_override_link(av.img, av.name);
+  find_and_set_avatar(av.img, av.name);
+};
+});
 });
