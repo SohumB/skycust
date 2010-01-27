@@ -386,7 +386,7 @@ if (cap.find('#avClip').length > 0) {
 
 $('tbody:has(td.profile)').each(function () {
   var sthis = $(this);
-  images.push({ name: sthis.find('.postauthor').text().strip(), img: $(sthis.find('img')[2]) });
+  images.push({ name: sthis.find('.postauthor').text().strip(), img: $(sthis.find('img')[1]) });
 });
 
 $('td.character').each(function () {
