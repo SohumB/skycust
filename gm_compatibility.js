@@ -63,12 +63,12 @@ name_checkers.spreadsheet = function(key) {
   return function(cont) {
     window.setTimeout(function () { // for some reason this is necessary...
       GM_xmlhttpRequest({
-	url: 'http://spreadsheets.google.com/feeds/worksheets/' + key + '/public/basic?alt=json',
-	method: 'GET',
-	onload: function(response) {
-	  response = JSON.parse(response.responseText);
-	  cont(response.feed.title.$t);
-	}
+		url: 'http://spreadsheets.google.com/feeds/worksheets/' + key + '/public/basic?alt=json',
+		method: 'GET',
+		onload: function(response) {
+		  response = JSON.parse(response.responseText);
+		  cont(response.feed.title.$t);
+		}
       });
     }, 0);
   };
