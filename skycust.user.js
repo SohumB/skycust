@@ -106,30 +106,13 @@ name_checkers.spreadsheet = function(key) {
   };
 };
 
-function memoize(fn) {
-  var avatars = {};
-  return function(name,success,failure) {
-    var cached = avatars[name];
-    if (cached) {
-      if (cached != "not found") {
-	success(avatars[name]);
-      } else {
-	failure();
-      }
-    } else {
-      fn(name, success, failure);
-    }
-  };
-}
-
 function simple(url_base) {
-  return memoize(
-    function(name, success, failure) {
-      var link = url_base + name;
-      check_existence_of(link,
-			 function (response) { avatars[name] = link; success(link); },
-			 function (req, stat, err) { avatars[name] = "not found"; failure(); });
-    });
+  return function(name, success, failure) {
+    var link = url_base + name;
+    check_existence_of(link,
+      function (response) { success(link); },
+      function (req, stat, err) { failure(); });
+  };
 }
 name_checkers.simple = function(addr) { return function(cont) { cont(addr.getHostname()); }; };
 
