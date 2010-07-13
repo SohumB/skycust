@@ -1,6 +1,6 @@
 {
   "name": "Skycust",
-  "version": "1.4",
+  "version": "1.4.1",
   "description": "A forum avatar-replacer based on a remote canonical image source.",
   "icons": { "16": "icon16.png", "32": "icon.png", "48": "icon.png" },
   "page_action": {
