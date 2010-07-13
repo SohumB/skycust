@@ -47,11 +47,21 @@ String.prototype.strip = function() {
   return (this.replace(/^\W+/,'')).replace(/\W+$/,'');
 }
 
+var blacklist = GM_getValue('blacklist');
+if (blacklist) { blacklist = JSON.parse(blacklist); } else { blacklist = {}; }
+function save_blacklist() {
+  GM_setValue('blacklist', JSON.stringify(blacklist));
+}
+
 function check_existence_of(uri, successfn, failurefn) {
-  GM_xmlhttpRequest({ url: uri,
-		      method: "GET",
-		      onload: successfn,
-		      onerror: failurefn });
+  if (blacklist[uri]) {
+	failurefn();
+  } else {
+    GM_xmlhttpRequest({ url: uri,
+                        method: "GET",
+                        onload: function(response) { if (response.status < 400) { successfn(); } else { failurefn(); } },
+                        onerror: failurefn });
+  }
 }
 
 function spreadsheet(key) {
@@ -176,6 +186,15 @@ function add_override_link(img, name) {
     overrider.hide();
   };
 
+  var sas_blacklist = function(new_blacklist) {
+	uri = img.attr("src");
+	blacklist[uri] = new_blacklist;
+	save_blacklist();
+	set_avatar_link(img, original);
+	find_and_set_avatar(img, name);
+	overrider.hide();
+  };
+
   var default_link = $('<a>Override to original skyrates art</a>');
   default_link.click(function () { set_and_save(original); });
   var custom_textbox = $('<input type="text"></input>');
@@ -184,12 +203,15 @@ function add_override_link(img, name) {
   custom_link.click(function () { set_and_save(custom_textbox.val()); });
   var clear_link = $('<a>Clear this override</a>');
   clear_link.click(function () { set_and_save(undefined); });
+  var blacklist_link = $('<a>Add this image to blacklist</a>');
+  blacklist_link.click(function () { sas_blacklist(true); });
 
   overrider
     .append(default_link).append("<br><br>")
     .append(custom_textbox).append("<br>")
     .append(custom_link).append("<br><br>")
-    .append(clear_link);
+    .append(clear_link).append("<br><br>")
+    .append(blacklist_link);
   overrider.appendTo($("body"));
   overrider.css({ 'width': 150,
 		  'display': "inline-block",
