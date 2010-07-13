@@ -28,11 +28,6 @@ if (!Array.prototype.map)
   };
 }
 
-String.prototype.getHostname = function() {
-  var re = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
-  return this.match(re)[1].toString();
-}
-
 String.prototype.strip = function() {
   return (this.replace(/^\W+/,'')).replace(/\W+$/,'');
 }

@@ -16,6 +16,11 @@ function wait(ms)
   while(curDate-date < ms);
 }
 
+String.prototype.getHostname = function() {
+  var re = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
+  return this.match(re)[1].toString();
+}
+
 function GM_getValue(name, def, cont) {
   chrome.extension.sendRequest(
     {get_local: true, key: name},
