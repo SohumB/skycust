@@ -261,11 +261,11 @@ function update_with_text(op, itext) {
   get_name(itext, function(name) { op.text(name); });
 }
 
-function add_to_list(list, itext) {
+function add_to_list(list, itext, selected) {
   var op = $('<option></option>');
   update_with_text(op, itext);
   list.append(op);
-  op.attr('selected', 'selected');
+  if (selected) { op.attr('selected', 'selected'); }
 }
 
 function attach_customisation_window() {
@@ -277,7 +277,7 @@ function attach_customisation_window() {
   list_div.css({ height: '100%', width: '85%', float: 'left' });
   var list = $('<select size=12></select>');
   list.css({ height: '100%', width: '95%' });
-  for (i in servers_text) { add_to_list(list,servers_text[i]); }
+  for (i in servers_text) { add_to_list(list,servers_text[i], false); }
   var button_div = $('<div></div>');
   button_div.css({ width: '10%', height: '100%', float: 'left' });
   var up_but = $('<button type="button"><img src="' + up_icon + '" /></button>');
@@ -314,13 +314,17 @@ function attach_customisation_window() {
     .append(custom_label);
 
   var wrap_with = function(out, arg) { return out + '("' + arg + '")'; }
-  var current_selection = function() { return $($("option:selected", list)[0]); }
+  var current_selection = function() {
+	s = $("option:selected", list);
+	if (s.length == 0) { add_to_list(list, "new value", true); s = $("option:selected", list); }
+	return $(s[0]);
+  }
 
-  simple_box.change(function(e) { update_with_text(current_selection(), wrap_with("simple", $(this).val())); list.change(); list.effect("highlight", {}, 1000); });
-  sheet_box.change(function(e) { update_with_text(current_selection(), wrap_with("spreadsheet", $(this).val())); list.change(); list.effect("highlight", {}, 1000); });
+  simple_box.change(function(e) { update_with_text(current_selection(), wrap_with("simple", $(this).val())); list.trigger('change'); list.effect("highlight", {}, 1000); });
+  sheet_box.change(function(e) { update_with_text(current_selection(), wrap_with("spreadsheet", $(this).val())); list.trigger('change'); list.effect("highlight", {}, 1000); });
   custom_area.change(function(e) { update_with_text(current_selection(), $(this).val()); list.effect("highlight", {}, 1000); });
 
-  list.change(function(e) { custom_area.val($(this).attr('value')); custom_area.effect("highlight", {}, 1000); });
+  list.change(function(e) { simple_box.val(''); sheet_box.val(''); custom_area.val($(this).attr('value')); custom_area.effect("highlight", {}, 1000); });
 
   up_but.click(function() {
     var curr = current_selection();
@@ -338,7 +342,7 @@ function attach_customisation_window() {
       tmp.attr('selected', 'selected');
     }
   });
-  add_but.click(function() { add_to_list(list, "new value"); });
+  add_but.click(function() { add_to_list(list, "new value", true); });
   del_but.click(function() { current_selection().remove(); });
 
   var button_div = $('<div></div>');
