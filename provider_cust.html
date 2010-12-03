@@ -116,6 +116,7 @@ $(document).ready(function () {
     servers_text = [];
     list.children().each(function (i, op) { servers_text[i] = $(op).attr('value'); });
     save_servers_text(servers_text);
+    window.close();
   });
   save_div.append(save);
 
