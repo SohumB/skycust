@@ -33,8 +33,12 @@ String.prototype.strip = function() {
   return (this.replace(/^\W+/,'')).replace(/\W+$/,'');
 }
 
-var blacklist = GM_getValue('blacklist');
+var blacklist;
+GM_getValue('blacklist', null, function(b) {
+blacklist = b;
 if (blacklist) { blacklist = JSON.parse(blacklist); } else { blacklist = {}; }
+});
+
 function save_blacklist() {
   GM_setValue('blacklist', JSON.stringify(blacklist));
 }
