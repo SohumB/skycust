@@ -9,7 +9,7 @@
     "popup": "provider_cust.html"
   },
   "background_page": "bg.html",
-  "permissions": ["http://*/"],
+  "permissions": ["http://*/", "https://*/"],
   "content_scripts": [
     {
       "matches": ["http://skyrates.net/*", "http://*.skyrates.net/*"],
