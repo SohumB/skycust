@@ -138,15 +138,17 @@ function save_local() {
 }
 
 function get_method(str) {
-  return str.split('(')[0];
+  var ret = str.split(/\((.*)\)$/);
+  ret[1] = JSON.parse('[' + ret[1] + ']');
+  return ret;
 }
 
 function get_name(str, cont) {
   if (names[str]) { cont(names[str]); return; }
   var method = get_method(str);
   var actual_cont = function(name) { names[str] = name; cont(name); };
-  if (name_checkers[method]) {
-    eval('name_checkers.' + str)(actual_cont);
+  if (name_checkers[method[0]]) {
+    name_checkers[method[0]].apply(null, method[1])(actual_cont);
   } else {
     actual_cont(str);
   }
