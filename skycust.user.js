@@ -49,7 +49,7 @@ function check_existence_of(uri, successfn, failurefn) {
   } else {
     GM_xmlhttpRequest({ url: uri,
                         method: "GET",
-                        onload: function(response) { if (response.status < 400) { successfn(); } else { failurefn(); } },
+                        onload: function(stat,responseText) { if (stat < 400) { successfn(); } else { failurefn(); } },
                         onerror: failurefn });
   }
 }
@@ -69,14 +69,14 @@ function spreadsheet(key) {
       GM_xmlhttpRequest({
         url: 'http://spreadsheets.google.com/feeds/list/' + key + '/1/public/values?alt=json',
         method: 'GET',
-        onload: function(response) { response = JSON.parse(response.responseText);
+        onload: function(stat,responseText) { response = JSON.parse(responseText);
                                      avatars = {};
                                      $.each(response.feed.entry, function(i, entry) {
                                        avatars[entry.gsx$name.$t] = entry.gsx$avatar.$t;
                                      });
                                      check_avatars();
                                    },
-        onerror: function(response) { failure(); }});
+        onerror: failure });
     } else { check_avatars(); }
   };
 }

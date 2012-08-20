@@ -22,7 +22,7 @@ String.prototype.getHostname = function() {
 }
 
 function GM_getValue(name, def, cont) {
-  chrome.extension.sendRequest(
+  chrome.extension.sendMessage(
     {get_local: true, key: name},
     function(val) {
       if (val) {
@@ -36,7 +36,7 @@ function GM_getValue(name, def, cont) {
 }
 
 function GM_setValue(name, val) {
-  chrome.extension.sendRequest({save_local: true, key: name, value: val});
+  chrome.extension.sendMessage({save_local: true, key: name, value: val});
 }
 
 function GM_xmlhttpRequest(details) {
@@ -44,9 +44,9 @@ function GM_xmlhttpRequest(details) {
   var onerror = details.onerror;
   details.onload = undefined;
   details.onerror = undefined;
-  chrome.extension.sendRequest({xhr: details},
-			       function(response) { if (response.onload && onload) { onload(response.response); }
-						    else if (response.onerror && onerror) { onerror(response.response); } });
+  chrome.extension.sendMessage({xhr: details},
+			       function(response) { if (response.onload && onload) { onload(response.status, response.responseText); }
+						    else if (response.onerror && onerror) { onerror(response.status, response.responseText); } });
 }
 
 $.ajax = function (details) {
@@ -54,7 +54,7 @@ $.ajax = function (details) {
   var error = details.error;
   details.success = undefined;
   details.error = undefined;
-  chrome.extension.sendRequest({ajax: details}, function(response) { if (response.success && success) { success(response.response); }
+  chrome.extension.sendMessage({ajax: details}, function(response) { if (response.success && success) { success(response.response); }
 							     else if (response.failure && failure) { failure(response.response, response.status, response.error); } });
 };
 
@@ -70,8 +70,8 @@ name_checkers.spreadsheet = function(key) {
       GM_xmlhttpRequest({
 		url: 'http://spreadsheets.google.com/feeds/worksheets/' + key + '/public/basic?alt=json',
 		method: 'GET',
-		onload: function(response) {
-		  response = JSON.parse(response.responseText);
+		onload: function(stat, responseText) {
+		  response = JSON.parse(responseText);
 		  cont(response.feed.title.$t);
 		}
       });
@@ -86,13 +86,13 @@ function get_method(str) {
 }
 
 function get_name(str, cont) {
-  chrome.extension.sendRequest(
+  chrome.extension.sendMessage(
     {check_name_cache: str},
     function(ret) {
       if (ret) { cont(ret); return; }
       var method = get_method(str);
       var actual_cont = function(name) {
-	chrome.extension.sendRequest(
+	chrome.extension.sendMessage(
 	  {set_name_cache: str, to: name},
 	  function() { cont(name); }); };
       if (name_checkers[method[0]]) {
@@ -104,7 +104,7 @@ function get_name(str, cont) {
 }
 
 function attach_customisation_window() {
-  chrome.extension.sendRequest({attach_customisation_window: true});
+  chrome.extension.sendMessage({attach_customisation_window: true});
 }
 
 
