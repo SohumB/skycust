@@ -80,7 +80,9 @@ name_checkers.spreadsheet = function(key) {
 };
 
 function get_method(str) {
-  return str.split('(')[0];
+  var ret = str.split(/\((.*)\)$/);
+  ret[1] = JSON.parse('[' + ret[1] + ']');
+  return ret;
 }
 
 function get_name(str, cont) {
@@ -93,8 +95,8 @@ function get_name(str, cont) {
 	chrome.extension.sendRequest(
 	  {set_name_cache: str, to: name},
 	  function() { cont(name); }); };
-      if (name_checkers[method]) {
-	eval('name_checkers.' + str)(actual_cont);
+      if (name_checkers[method[0]]) {
+	name_checkers[method[0]].apply(null, method[1])(actual_cont);
       } else {
 	actual_cont(str);
       }
