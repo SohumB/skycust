@@ -1,6 +1,3 @@
-<html>
-  <script src="jquery.min.js"></script>
-  <script>
   var names = [];
     chrome.extension.onRequest.addListener(
       function(request, sender, sendResponse) {
@@ -39,5 +36,3 @@
 	  sendResponse(null);
 	}
       });
-  </script>
-</html>
