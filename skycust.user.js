@@ -258,15 +258,15 @@ $("head").append(
   '</style>'
 );
 
-function update_with_text(op, itext) {
+function update_with_text(op, itext, skip_name_checking) {
   op.attr({ value: itext });
   op.text(itext);
-  get_name(itext, function(name) { op.text(name); });
+  if (!skip_name_checking) { get_name(itext, function(name) { op.text(name); }); }
 }
 
 function add_to_list(list, itext, selected) {
   var op = $('<option></option>');
-  update_with_text(op, itext);
+  itext ? update_with_text(op, itext) : update_with_text(op, "new value", true);
   list.append(op);
   if (selected) { op.attr('selected', 'selected'); }
 }
@@ -319,7 +319,7 @@ function attach_customisation_window() {
   var wrap_with = function(out, arg) { return out + '("' + arg + '")'; }
   var current_selection = function() {
 	s = $("option:selected", list);
-	if (s.length == 0) { add_to_list(list, "new value", true); s = $("option:selected", list); }
+	if (s.length == 0) { add_to_list(list, null, true); s = $("option:selected", list); }
 	return $(s[0]);
   }
 
@@ -345,7 +345,7 @@ function attach_customisation_window() {
       tmp.attr('selected', 'selected');
     }
   });
-  add_but.click(function() { add_to_list(list, "new value", true); });
+  add_but.click(function() { add_to_list(list, null, true); });
   del_but.click(function() { current_selection().remove(); });
 
   var button_div = $('<div></div>');
